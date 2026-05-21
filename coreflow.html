@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CoreFlow · Orquestração de core banking — Diletta Solutions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #08050A;
+    --bg-1: #0E0A0C;
+    --bg-2: #15101A;
+    --bg-3: #1F1820;
+    --line: rgba(255,255,255,0.08);
+    --line-strong: rgba(230,0,0,0.30);
+    --text-1: #F5F0F0;
+    --text-2: #BAB2B5;
+    --text-3: #7A7378;
+    --red: #E60000;
+    --red-2: #FF3D3D;
+    --red-soft: rgba(230,0,0,0.10);
+    --red-glow: rgba(230,0,0,0.35);
+    --shadow: 0 30px 80px rgba(0,0,0,0.6);
+    --shadow-red: 0 20px 60px rgba(230,0,0,0.25);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg-0);
+    color: var(--text-1);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 400;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 1400px 700px at 15% -200px, rgba(230,0,0,0.14), transparent 60%),
+      radial-gradient(ellipse 1000px 800px at 100% 30%, rgba(230,0,0,0.05), transparent 60%),
+      radial-gradient(ellipse 1200px 900px at 50% 100%, rgba(230,0,0,0.06), transparent 60%);
+  }
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+  @media (max-width: 720px) { .container { padding: 0 20px; } }
+
+  /* TOP BAR */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    border-bottom: 1px solid var(--line);
+    background: rgba(8,5,10,0.78);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+  }
+  .topbar-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 32px; max-width: 1400px; margin: 0 auto;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand-logo {
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brand-text {
+    font-family: 'Inter', sans-serif; font-weight: 800;
+    font-size: 14px; letter-spacing: 0.18em;
+    color: var(--text-1);
+  }
+  .brand-text .red { color: var(--red); }
+  .nav { display: flex; gap: 32px; align-items: center; }
+  .nav a {
+    color: var(--text-2); text-decoration: none; font-size: 12px;
+    font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase;
+    transition: color 0.2s ease;
+  }
+  .nav a:hover { color: var(--red); }
+  @media (max-width: 880px) { .nav { display: none; } .topbar-inner { padding: 14px 20px; } }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh; display: flex; align-items: center;
+    padding: 120px 0 80px; position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.6;
+  }
+  .hero-radial {
+    width: min(900px, 90vw); height: min(900px, 90vw);
+    animation: slowSpin 80s linear infinite;
+  }
+  .hero-radial svg { width: 100%; height: 100%; }
+  .hero-radial .arc { stroke: var(--red); fill: none; opacity: 0.12; }
+  .hero-radial .arc-mid { opacity: 0.20; }
+  .hero-radial .arc-inner { opacity: 0.35; }
+  @keyframes slowSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  .hero-content { position: relative; z-index: 1; max-width: 920px; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--red); margin-bottom: 32px; font-weight: 600;
+    animation: fadeUp 0.8s ease 0.1s both;
+  }
+  .hero-tag::before { content: ''; width: 30px; height: 1px; background: var(--red); }
+  .hero h1 {
+    font-family: 'Fraunces', serif; font-weight: 300;
+    font-size: clamp(48px, 8.5vw, 112px);
+    line-height: 0.96; letter-spacing: -0.035em;
+    margin-bottom: 36px; color: var(--text-1);
+    animation: fadeUp 1s ease 0.25s both;
+  }
+  .hero h1 .accent { color: var(--red); font-style: italic; font-weight: 400; }
+  .hero h1 .stroke { -webkit-text-stroke: 1.5px var(--text-1); color: transparent; }
+  .hero-lede {
+    font-size: clamp(18px, 1.7vw, 22px); color: var(--text-2);
+    max-width: 720px; line-height: 1.65; font-weight: 300;
+    margin-bottom: 56px;
+    animation: fadeUp 1s ease 0.4s both;
+  }
+  .hero-lede em { color: var(--text-1); font-style: normal; font-weight: 500; }
+  .hero-meta { display: flex; gap: 56px; flex-wrap: wrap; animation: fadeUp 1s ease 0.55s both; }
+  .hero-meta-item .l { font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-3); margin-bottom: 10px; font-weight: 500; }
+  .hero-meta-item .v { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 500; color: var(--text-1); }
+  .hero-meta-item .v .small { font-size: 13px; color: var(--text-3); font-family: 'Inter', sans-serif; font-weight: 400; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* SCROLL CUE */
+  .scroll-cue {
+    position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--text-3); display: flex; flex-direction: column; align-items: center; gap: 12px;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  .scroll-cue::after {
+    content: ''; width: 1px; height: 32px; background: linear-gradient(to bottom, var(--text-3), transparent);
+  }
+  @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  /* SECTIONS */
+  section { padding: 120px 0; position: relative; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--red); margin-bottom: 24px; font-weight: 600;
+  }
+  .eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--red); }
+  .section-title {
+    font-family: 'Fraunces', serif; font-weight: 300;
+    font-size: clamp(36px, 5.5vw, 64px);
+    letter-spacing: -0.025em; line-height: 1.08;
+    margin-bottom: 28px; color: var(--text-1);
+  }
+  .section-title .accent { color: var(--red); font-style: italic; font-weight: 400; }
+  .section-lede {
+    font-size: clamp(16px, 1.4vw, 18px); color: var(--text-2);
+    max-width: 720px; line-height: 1.75; font-weight: 300;
+  }
+
+  /* STATS BAND */
+  .stats {
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    background: var(--bg-1); padding: 56px 0;
+  }
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+  .stat {
+    padding: 24px 36px; position: relative;
+    border-right: 1px solid var(--line);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Fraunces', serif; font-size: clamp(52px, 6vw, 84px);
+    font-weight: 400; letter-spacing: -0.04em; line-height: 1;
+    color: var(--text-1); margin-bottom: 6px;
+    display: flex; align-items: baseline; gap: 4px;
+  }
+  .stat-num .plus { font-size: 0.55em; color: var(--red); font-weight: 500; }
+  .stat-num .unit { font-size: 0.30em; color: var(--text-3); font-weight: 400; font-family: 'Inter', sans-serif; margin-left: 10px; letter-spacing: 0; }
+  .stat-label { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); font-weight: 500; }
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .stat { border-bottom: 1px solid var(--line); padding: 24px; }
+    .stat:nth-child(2) { border-right: none; }
+  }
+  @media (max-width: 520px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .stat { border-right: none !important; }
+  }
+
+  /* DNA / QUEM SOMOS */
+  .dna-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 80px; align-items: start; }
+  @media (max-width: 900px) { .dna-grid { grid-template-columns: 1fr; gap: 48px; } }
+  .dna-text p { color: var(--text-2); line-height: 1.85; font-size: 16px; margin-bottom: 18px; font-weight: 300; }
+  .dna-text p em { color: var(--red); font-style: italic; font-weight: 500; }
+  .dna-text p strong { color: var(--text-1); font-weight: 500; }
+  .dna-quote {
+    margin-top: 32px; padding: 28px 32px;
+    border-left: 2px solid var(--red);
+    background: var(--red-soft);
+    border-radius: 0 12px 12px 0;
+  }
+  .dna-quote p { font-family: 'Fraunces', serif; font-size: 18px; font-style: italic; color: var(--text-1); line-height: 1.55; font-weight: 300; }
+  .dna-quote p::before { content: '"'; color: var(--red); font-size: 28px; margin-right: 6px; }
+  .dna-quote p::after { content: '"'; color: var(--red); font-size: 28px; margin-left: 6px; }
+
+  .dna-card-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  .dna-card {
+    padding: 22px 26px; background: var(--bg-1);
+    border: 1px solid var(--line); border-radius: 12px;
+    display: flex; gap: 18px; align-items: flex-start;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+  }
+  .dna-card:hover { border-color: var(--line-strong); transform: translateX(4px); }
+  .dna-card .icon {
+    width: 38px; height: 38px; flex-shrink: 0;
+    background: var(--red-soft); border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--red);
+  }
+  .dna-card .icon svg { width: 18px; height: 18px; }
+  .dna-card h4 { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 500; color: var(--text-1); margin-bottom: 4px; letter-spacing: -0.01em; }
+  .dna-card p { font-size: 13px; color: var(--text-2); line-height: 1.55; font-weight: 300; }
+
+  /* PILARES */
+  .pillars-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px; margin-top: 64px;
+  }
+  .pillar {
+    padding: 32px 28px; background: var(--bg-1);
+    border: 1px solid var(--line); border-radius: 14px;
+    position: relative; overflow: hidden;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+  }
+  .pillar:hover { border-color: var(--line-strong); transform: translateY(-4px); }
+  .pillar::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 4px; height: 0; background: var(--red);
+    transition: height 0.4s ease;
+  }
+  .pillar:hover::before { height: 100%; }
+  .pillar .num {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--red); margin-bottom: 20px; letter-spacing: 0.12em;
+  }
+  .pillar h3 {
+    font-family: 'Fraunces', serif; font-size: 22px; font-weight: 500;
+    color: var(--text-1); margin-bottom: 12px; letter-spacing: -0.015em;
+  }
+  .pillar p { font-size: 14px; color: var(--text-2); line-height: 1.7; font-weight: 300; }
+
+  /* CASES GRID */
+  .cases-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 14px; margin-top: 64px;
+  }
+  @media (max-width: 1100px) { .cases-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 780px)  { .cases-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px)  { .cases-grid { grid-template-columns: 1fr; } }
+  .case-card {
+    background: var(--bg-1); border: 1px solid var(--line);
+    border-radius: 14px; padding: 22px 22px 20px;
+    transition: all 0.35s ease;
+    position: relative; overflow: hidden;
+  }
+  .case-card::after {
+    content: ''; position: absolute; inset: 0; border-radius: 14px;
+    box-shadow: inset 0 0 0 1px var(--red);
+    opacity: 0; transition: opacity 0.35s ease; pointer-events: none;
+  }
+  .case-card:hover { transform: translateY(-4px); background: var(--bg-2); }
+  .case-card:hover::after { opacity: 1; }
+  .case-logo {
+    height: 56px; display: flex; align-items: center; justify-content: flex-start;
+    margin-bottom: 18px;
+  }
+  .case-logo img {
+    max-height: 100%; max-width: 80%;
+    opacity: 0.92;
+    transition: opacity 0.3s ease;
+  }
+  .case-card:hover .case-logo img { opacity: 1; }
+  .case-sep { width: 24px; height: 1px; background: var(--line); margin: 0 0 14px; transition: background 0.3s ease, width 0.3s ease; }
+  .case-card:hover .case-sep { background: var(--red); width: 36px; }
+  .case-name {
+    font-family: 'Fraunces', serif; font-size: 19px; font-weight: 500;
+    color: var(--text-1); margin-bottom: 6px; letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .case-sector { font-size: 11px; letter-spacing: 0.10em; color: var(--text-3); text-transform: uppercase; margin-bottom: 14px; font-weight: 500; }
+  .case-metric {
+    font-size: 13px; color: var(--text-2); line-height: 1.45;
+    font-weight: 400; padding-top: 14px; border-top: 1px solid var(--line);
+  }
+  .case-card:hover .case-metric { color: var(--text-1); }
+
+  /* FEATURED CASES */
+  .featured-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 64px; }
+  @media (max-width: 900px) { .featured-grid { grid-template-columns: 1fr; } }
+  .featured-card {
+    background: linear-gradient(135deg, var(--bg-2) 0%, var(--bg-1) 100%);
+    border: 1px solid var(--line); border-radius: 18px;
+    padding: 40px 36px; position: relative; overflow: hidden;
+    transition: all 0.4s ease;
+  }
+  .featured-card:hover { border-color: var(--line-strong); }
+  .featured-card::before {
+    content: ''; position: absolute; top: -100px; right: -100px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, var(--red-glow), transparent 60%);
+    opacity: 0.4; pointer-events: none; transition: opacity 0.4s ease;
+  }
+  .featured-card:hover::before { opacity: 0.7; }
+  .featured-card .logo-wrap { height: 64px; margin-bottom: 28px; display: flex; align-items: center; }
+  .featured-card .logo-wrap img { max-height: 100%; opacity: 1; }
+  .featured-card h3 { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 500; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .featured-card .sect { font-size: 11px; letter-spacing: 0.22em; color: var(--red); text-transform: uppercase; margin-bottom: 22px; font-weight: 600; }
+  .featured-card .desc { font-size: 15px; color: var(--text-2); line-height: 1.7; font-weight: 300; margin-bottom: 28px; }
+  .featured-card .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding-top: 22px; border-top: 1px solid var(--line); position: relative; z-index: 1; }
+  .featured-card .metric .num { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 500; color: var(--red); letter-spacing: -0.015em; line-height: 1; margin-bottom: 6px; }
+  .featured-card .metric .lbl { font-size: 11px; letter-spacing: 0.12em; color: var(--text-3); text-transform: uppercase; font-weight: 500; }
+
+  /* STACK CONSTELLATION */
+  .stack-wrap { margin-top: 56px; }
+  .stack-quote {
+    font-family: 'Fraunces', serif; font-size: clamp(22px, 2.6vw, 30px);
+    font-weight: 300; font-style: italic; line-height: 1.4;
+    color: var(--text-1); text-align: center;
+    max-width: 820px; margin: 0 auto 56px; letter-spacing: -0.01em;
+  }
+  .stack-quote .accent { color: var(--red); font-weight: 400; }
+  .stack-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+  .stack-group {
+    padding: 24px 24px 22px; background: var(--bg-1);
+    border: 1px solid var(--line); border-radius: 12px;
+  }
+  .stack-group h5 {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--red); margin-bottom: 18px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stack-group h5::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .stack-group .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .stack-chip {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    padding: 5px 10px; background: var(--bg-3);
+    border-radius: 5px; color: var(--text-2);
+    border: 1px solid transparent; transition: all 0.2s ease; cursor: default;
+  }
+  .stack-chip:hover { border-color: var(--red); color: var(--text-1); background: var(--bg-2); }
+
+  /* DIFERENCIAIS */
+  .diff-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-top: 64px; }
+  @media (max-width: 1100px) { .diff-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 640px) { .diff-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 420px) { .diff-grid { grid-template-columns: 1fr; } }
+  .diff-card {
+    padding: 28px 24px; background: var(--bg-1);
+    border: 1px solid var(--line); border-radius: 14px;
+    text-align: center; transition: all 0.3s ease;
+    position: relative;
+  }
+  .diff-card:hover { border-color: var(--line-strong); transform: translateY(-3px); background: var(--bg-2); }
+  .diff-card .big {
+    font-family: 'Fraunces', serif; font-size: 44px; font-weight: 500;
+    color: var(--red); margin-bottom: 4px; letter-spacing: -0.025em; line-height: 1;
+  }
+  .diff-card .big .small { font-size: 0.45em; color: var(--text-3); font-weight: 400; letter-spacing: 0; font-family: 'Inter', sans-serif; margin-left: 2px; }
+  .diff-card .name {
+    font-family: 'Fraunces', serif; font-size: 16px; font-weight: 500;
+    color: var(--text-1); margin: 18px 0 8px; letter-spacing: -0.01em;
+  }
+  .diff-card p { font-size: 12px; color: var(--text-3); line-height: 1.5; font-weight: 400; }
+
+  /* SETORES */
+  .sectors {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-top: 56px; justify-content: center;
+  }
+  .sector {
+    font-family: 'Inter', sans-serif; font-size: 14px;
+    padding: 12px 22px; background: var(--bg-1);
+    border: 1px solid var(--line); border-radius: 100px;
+    color: var(--text-2); font-weight: 400;
+    transition: all 0.3s ease; cursor: default;
+  }
+  .sector:hover {
+    background: var(--red-soft); color: var(--text-1);
+    border-color: var(--red); transform: translateY(-2px);
+  }
+  .sector .dot { color: var(--red); margin-right: 8px; font-size: 18px; vertical-align: middle; }
+
+  /* GLOBAL PRESENCE */
+  .globe-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 60px; align-items: center; margin-top: 56px; }
+  @media (max-width: 900px) { .globe-grid { grid-template-columns: 1fr; gap: 40px; } }
+  .globe-list { display: flex; flex-direction: column; gap: 8px; }
+  .globe-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 24px; background: var(--bg-1);
+    border: 1px solid var(--line); border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+  .globe-item:hover { border-color: var(--line-strong); transform: translateX(4px); }
+  .globe-item .flag-name { display: flex; align-items: center; gap: 14px; }
+  .globe-item .flag { width: 30px; height: 22px; border-radius: 3px; background: var(--bg-3); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .globe-item .name { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 500; color: var(--text-1); letter-spacing: -0.01em; }
+  .globe-item .meta { font-size: 11px; color: var(--text-3); letter-spacing: 0.12em; text-transform: uppercase; }
+  .globe-vis {
+    aspect-ratio: 1; max-width: 420px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .globe-vis svg { width: 100%; height: 100%; }
+
+  /* CLOSING */
+  .closing { text-align: center; padding: 160px 0 120px; position: relative; }
+  .closing::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 60%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--red) 50%, transparent);
+    opacity: 0.4;
+  }
+  .closing h2 {
+    font-family: 'Fraunces', serif; font-weight: 300;
+    font-size: clamp(40px, 7vw, 88px); line-height: 1.05;
+    letter-spacing: -0.03em; margin-bottom: 24px;
+  }
+  .closing h2 .accent { color: var(--red); font-style: italic; font-weight: 400; }
+  .closing p {
+    font-size: clamp(16px, 1.5vw, 19px); color: var(--text-2);
+    max-width: 680px; margin: 0 auto 56px; line-height: 1.7; font-weight: 300;
+  }
+  .closing .sig {
+    display: inline-flex; align-items: center; gap: 16px;
+    padding: 16px 28px; border: 1px solid var(--red);
+    border-radius: 100px; color: var(--text-1); font-size: 13px;
+    font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+  }
+  .closing .sig .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 14px var(--red); }
+
+
+  /* NAV CTA */
+  .nav a.nav-cta {
+    color: var(--red); border: 1px solid var(--red); padding: 7px 16px;
+    border-radius: 100px; transition: all 0.25s ease;
+  }
+  .nav a.nav-cta:hover { background: var(--red); color: #fff; }
+
+  /* AI SECTION */
+  .ai-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 64px; }
+  @media (max-width: 1000px) { .ai-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 540px) { .ai-grid { grid-template-columns: 1fr; } }
+  .ai-card {
+    padding: 32px 28px; background: var(--bg-1);
+    border: 1px solid var(--line); border-radius: 16px;
+    transition: all 0.35s ease; position: relative; overflow: hidden;
+  }
+  .ai-card::before {
+    content: ''; position: absolute; top: -60px; right: -60px; width: 160px; height: 160px;
+    background: radial-gradient(circle, var(--red-glow), transparent 65%);
+    opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
+  }
+  .ai-card:hover { border-color: var(--line-strong); transform: translateY(-5px); }
+  .ai-card:hover::before { opacity: 0.5; }
+  .ai-ico {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: var(--red-soft); color: var(--red);
+    display: flex; align-items: center; justify-content: center; margin-bottom: 22px;
+  }
+  .ai-ico svg { width: 24px; height: 24px; }
+  .ai-card h3 { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 500; color: var(--text-1); margin-bottom: 12px; letter-spacing: -0.015em; }
+  .ai-card p { font-size: 14px; color: var(--text-2); line-height: 1.7; font-weight: 300; }
+  .ai-banner { margin-top: 32px; padding: 48px 56px; border-radius: 18px;
+    background: linear-gradient(120deg, rgba(230,0,0,0.14), rgba(230,0,0,0.03));
+    border: 1px solid var(--line-strong); text-align: center; }
+  @media (max-width: 640px) { .ai-banner { padding: 32px 24px; } }
+  .ai-banner-q {
+    font-family: 'Fraunces', serif; font-weight: 300; font-style: italic;
+    font-size: clamp(20px, 2.6vw, 30px); line-height: 1.45;
+    color: var(--text-1); max-width: 900px; margin: 0 auto; letter-spacing: -0.01em;
+  }
+  .ai-banner-q .accent { color: var(--red); font-style: normal; font-weight: 500; }
+
+  /* CTA / CONTATO */
+  .cta { padding: 130px 0; position: relative; }
+  .cta::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 70%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--red) 50%, transparent); opacity: 0.4;
+  }
+  .cta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  @media (max-width: 920px) { .cta-grid { grid-template-columns: 1fr; gap: 48px; } }
+  .cta-title { font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(34px, 5vw, 60px); line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 22px; }
+  .cta-title .accent { color: var(--red); font-style: italic; font-weight: 400; }
+  .cta-lede { font-size: 17px; color: var(--text-2); line-height: 1.7; font-weight: 300; margin-bottom: 40px; max-width: 480px; }
+  .cta-email {
+    display: inline-flex; align-items: center; gap: 14px; text-decoration: none;
+    font-family: 'Fraunces', serif; font-size: clamp(18px, 2vw, 24px); font-weight: 500;
+    color: var(--text-1); margin-bottom: 20px; letter-spacing: -0.01em;
+    transition: color 0.25s ease;
+  }
+  .cta-email:hover { color: var(--red); }
+  .cta-email-ico { width: 42px; height: 42px; border-radius: 10px; background: var(--red-soft); color: var(--red); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .cta-email-ico svg { width: 20px; height: 20px; }
+  .cta-linkedin {
+    display: flex; align-items: center; gap: 12px; text-decoration: none;
+    font-size: 14px; color: var(--text-2); transition: color 0.25s ease;
+  }
+  .cta-linkedin:hover { color: var(--red); }
+  .cta-linkedin svg { width: 20px; height: 20px; color: var(--text-3); }
+  .cta-linkedin:hover svg { color: var(--red); }
+
+  .cta-form-wrap {
+    background: var(--bg-1); border: 1px solid var(--line);
+    border-radius: 18px; padding: 36px;
+  }
+  .cta-form .field { margin-bottom: 18px; }
+  .cta-form label { display: block; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; font-weight: 600; }
+  .cta-form input, .cta-form textarea {
+    width: 100%; padding: 13px 16px; background: var(--bg-2);
+    border: 1px solid var(--line); border-radius: 10px;
+    color: var(--text-1); font-family: 'Inter', sans-serif; font-size: 14px;
+    transition: border-color 0.2s ease, background 0.2s ease; resize: vertical;
+  }
+  .cta-form input::placeholder, .cta-form textarea::placeholder { color: var(--text-3); }
+  .cta-form input:focus, .cta-form textarea:focus { outline: none; border-color: var(--red); background: var(--bg-3); }
+  .cta-submit {
+    display: inline-flex; align-items: center; gap: 10px; width: 100%; justify-content: center;
+    padding: 15px 24px; background: var(--red); color: #fff;
+    border: none; border-radius: 10px; font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 600; letter-spacing: 0.04em; cursor: pointer;
+    transition: all 0.25s ease; margin-top: 8px;
+  }
+  .cta-submit:hover { background: #FF1A1A; transform: translateY(-2px); box-shadow: var(--shadow-red); }
+  .cta-submit svg { width: 18px; height: 18px; }
+  .cta-note { font-size: 12px; color: var(--text-3); margin-top: 16px; line-height: 1.5; text-align: center; }
+  .cta-note strong { color: var(--text-2); font-weight: 500; }
+
+  /* INSTITUTIONAL FOOTER */
+  footer { padding: 72px 0 40px; border-top: 1px solid var(--line); background: var(--bg-1); }
+  .foot-top { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid var(--line); }
+  @media (max-width: 980px) { .foot-top { grid-template-columns: 1fr 1fr; gap: 36px; } .foot-brandcol { grid-column: 1 / -1; } }
+  @media (max-width: 560px) { .foot-top { grid-template-columns: 1fr; } }
+  .foot-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .foot-brand .text { font-family: 'Inter', sans-serif; font-weight: 700; letter-spacing: 0.16em; font-size: 13px; }
+  .foot-tagline { font-size: 13px; color: var(--text-2); line-height: 1.65; font-weight: 300; max-width: 380px; margin-bottom: 22px; }
+  .foot-badges { display: flex; flex-wrap: wrap; gap: 10px; }
+  .foot-badge {
+    display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 500;
+    letter-spacing: 0.04em; color: var(--text-2); padding: 8px 14px;
+    border: 1px solid var(--line-strong); border-radius: 100px; background: var(--red-soft);
+  }
+  .foot-badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); box-shadow: 0 0 10px var(--red); }
+  .foot-col h5 { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red); margin-bottom: 18px; font-weight: 600; }
+  .foot-col a, .foot-col .foot-static { display: block; font-size: 13px; color: var(--text-2); text-decoration: none; margin-bottom: 12px; line-height: 1.5; transition: color 0.2s ease; }
+  .foot-col a:hover { color: var(--red); }
+  .foot-addr { font-size: 13px; color: var(--text-2); line-height: 1.7; font-weight: 300; }
+  .foot-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; padding-top: 28px; font-size: 12px; color: var(--text-3); letter-spacing: 0.04em; }
+
+  /* FOOTER (legacy) */
+  footer { padding: 48px 0; border-top: 1px solid var(--line); }
+  .foot {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 24px; color: var(--text-3); font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .foot-brand { display: flex; align-items: center; gap: 12px; }
+  .foot-brand .text { font-family: 'Inter', sans-serif; font-weight: 700; letter-spacing: 0.16em; font-size: 12px; }
+
+  /* Reveal on scroll */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.9s ease, transform 0.9s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* Marquee for hero logos */
+  .marquee {
+    overflow: hidden; padding: 28px 0;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    background: var(--bg-1);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .marquee-inner {
+    display: flex; gap: 80px; width: max-content;
+    animation: marqueeScroll 60s linear infinite;
+    align-items: center;
+  }
+  .marquee-inner img {
+    height: 38px; opacity: 0.7;
+    flex-shrink: 0; transition: opacity 0.3s ease;
+  }
+  .marquee-inner img:hover { opacity: 1; }
+  @keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+</style>
+
+<style>
+  /* ===== Product pages additions ===== */
+  a.brand { text-decoration: none; }
+  /* Products dropdown */
+  .nav .has-dropdown { position: relative; }
+  .nav .drop-trigger::after { content: ' \25BE'; font-size: 9px; vertical-align: middle; }
+  .nav .dropdown-menu {
+    position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(4px);
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px;
+    padding: 8px; min-width: 240px; opacity: 0; visibility: hidden;
+    transition: all 0.22s ease; box-shadow: var(--shadow); z-index: 50;
+  }
+  .nav .has-dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(10px); }
+  .nav .dropdown-menu::before { content:''; position:absolute; top:-10px; left:0; right:0; height:10px; }
+  .nav .dropdown-menu a {
+    display: block; padding: 11px 14px; border-radius: 8px; text-transform: none;
+    letter-spacing: 0.01em; font-size: 14px; font-weight: 600; color: var(--text-1);
+  }
+  .nav .dropdown-menu a:hover { background: var(--bg-3); color: var(--red); }
+  .nav .dropdown-menu a .d-sub { display: block; font-size: 11px; color: var(--text-3); margin-top: 3px; letter-spacing: 0; font-weight: 400; text-transform: none; }
+
+  /* Product hero badge */
+  .prod-badge { display: inline-flex; align-items: center; gap: 10px; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-2); padding: 7px 16px; border: 1px solid var(--line-strong); border-radius: 100px; background: var(--red-soft); margin-bottom: 30px; font-weight: 600; }
+  .prod-badge .by { color: var(--text-3); font-weight: 400; letter-spacing: 0.04em; text-transform: none; }
+  .prod-badge .by b { color: var(--red); font-weight: 600; }
+
+  /* Comparison lists */
+  .cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 56px; }
+  @media (max-width: 860px) { .cmp-grid { grid-template-columns: 1fr; } }
+  .cmp-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 16px; padding: 36px 34px; }
+  .cmp-card.good { background: linear-gradient(135deg, rgba(230,0,0,0.07), rgba(230,0,0,0.01)); border-color: var(--line-strong); }
+  .cmp-card .cmp-eyebrow { display: flex; align-items: center; gap: 10px; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+  .cmp-card.bad .cmp-eyebrow { color: var(--text-3); }
+  .cmp-card.good .cmp-eyebrow { color: var(--red); }
+  .cmp-card .cmp-eyebrow .pip { width: 8px; height: 8px; border-radius: 50%; }
+  .cmp-card.bad .pip { background: var(--text-3); }
+  .cmp-card.good .pip { background: var(--red); box-shadow: 0 0 10px var(--red); }
+  .cmp-card h3 { font-family: 'Fraunces', serif; font-size: 25px; font-weight: 500; margin-bottom: 26px; letter-spacing: -0.015em; }
+  .cmp-list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+  .cmp-list li { display: flex; gap: 14px; align-items: flex-start; font-size: 14.5px; line-height: 1.55; color: var(--text-2); font-weight: 300; }
+  .cmp-list li .mk { flex-shrink: 0; width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 1px; }
+  .cmp-list li .mk.x { background: rgba(255,255,255,0.06); color: var(--text-3); }
+  .cmp-list li .mk.v { background: var(--red); color: #fff; }
+  .cmp-list li strong { color: var(--text-1); font-weight: 600; }
+
+  /* Flow (3 layers) */
+  .flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; margin-top: 56px; }
+  @media (max-width: 900px) { .flow { grid-template-columns: 1fr; gap: 16px; } .flow-arrow { transform: rotate(90deg); padding: 4px 0; } }
+  .flow-arrow { display: flex; align-items: center; justify-content: center; color: var(--red); padding: 0 16px; }
+  .flow-arrow svg { width: 26px; height: 26px; }
+  .flow .pillar { height: 100%; }
+  .flow .pillar .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+
+  /* Architecture stack */
+  .arch { display: flex; flex-direction: column; gap: 10px; margin-top: 56px; }
+  .arch-layer { border: 1px solid var(--line); border-radius: 14px; padding: 22px 26px; background: var(--bg-1); display: flex; gap: 22px; align-items: center; transition: all 0.3s ease; }
+  .arch-layer:hover { border-color: var(--line-strong); transform: translateX(4px); }
+  .arch-layer.core { background: var(--bg-2); border-style: dashed; opacity: 0.85; }
+  .arch-layer.opt { opacity: 0.7; }
+  .arch-layer.hl { background: linear-gradient(120deg, rgba(230,0,0,0.13), rgba(230,0,0,0.02)); border-color: var(--line-strong); }
+  .arch-num { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--red); width: 26px; flex-shrink: 0; font-weight: 700; }
+  .arch-body { flex: 1; }
+  .arch-body h4 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 500; margin-bottom: 3px; letter-spacing: -0.01em; }
+  .arch-body .sub { font-size: 12px; color: var(--red); letter-spacing: 0.04em; margin-bottom: 12px; font-weight: 500; }
+  .arch-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* Use cases */
+  .usecase { border: 1px solid var(--line); border-radius: 16px; padding: 28px 32px; background: var(--bg-1); display: grid; grid-template-columns: 1fr 180px; gap: 28px; align-items: center; transition: all 0.3s ease; margin-bottom: 12px; }
+  .usecase:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+  .usecase .tag { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red); font-weight: 600; margin-bottom: 10px; }
+  .usecase h4 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 500; margin-bottom: 10px; letter-spacing: -0.015em; }
+  .usecase p { font-size: 14px; color: var(--text-2); line-height: 1.65; font-weight: 300; }
+  .usecase .uc-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+  .usecase .impact { text-align: right; padding-left: 24px; border-left: 1px solid var(--line); }
+  .usecase .impact .big { font-family: 'Fraunces', serif; font-size: 22px; color: var(--red); font-weight: 500; line-height: 1.15; letter-spacing: -0.015em; }
+  .usecase .impact .lbl { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  @media (max-width: 720px) { .usecase { grid-template-columns: 1fr; } .usecase .impact { text-align: left; padding-left: 0; border-left: none; border-top: 1px solid var(--line); padding-top: 18px; } }
+
+  /* Invest model steps */
+  .invest-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 56px; }
+  @media (max-width: 900px) { .invest-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .invest-grid { grid-template-columns: 1fr; } }
+  .invest-step { background: var(--bg-1); border: 1px solid var(--line); border-radius: 14px; padding: 28px 24px; position: relative; transition: all 0.3s ease; }
+  .invest-step:hover { border-color: var(--line-strong); transform: translateY(-3px); }
+  .invest-step .step-n { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--red); letter-spacing: 0.12em; margin-bottom: 16px; }
+  .invest-step h4 { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 500; margin-bottom: 6px; letter-spacing: -0.01em; }
+  .invest-step .price { font-size: 13px; color: var(--red); font-weight: 600; margin-bottom: 12px; }
+  .invest-step p { font-size: 13px; color: var(--text-2); line-height: 1.6; font-weight: 300; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <div class="brand-logo"><img src="data:image/png;base64,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" alt="Diletta" style="height: 34px;"></div>
+      <div class="brand-text">DILETTA <span class="red">SOLUTIONS</span></div>
+    </a>
+    <nav class="nav">
+      <div class="has-dropdown">
+        <a href="lia.html" class="drop-trigger">Produtos IA</a>
+        <div class="dropdown-menu">
+          <a href="lia.html">LIA<span class="d-sub">Atendente avatar com IA</span></a>
+          <a href="coreflow.html">CoreFlow<span class="d-sub">Orquestração de core banking</span></a>
+        </div>
+      </div>
+      <a href="index.html#ia">IA</a>
+      <a href="index.html#casos">Cases</a>
+      <a href="index.html#global">Global</a>
+      <a href="#contato" class="nav-cta">Fale conosco</a>
+    </nav>
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-bg"><div class="hero-radial">
+    <svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke-width="2">
+      <circle class="arc" cx="300" cy="300" r="280"/><circle class="arc" cx="300" cy="300" r="240"/>
+      <circle class="arc" cx="300" cy="300" r="200"/><circle class="arc arc-mid" cx="300" cy="300" r="160"/>
+      <circle class="arc arc-mid" cx="300" cy="300" r="120"/><circle class="arc arc-inner" cx="300" cy="300" r="80"/>
+      <circle class="arc arc-inner" cx="300" cy="300" r="50"/>
+      <g class="arc"><line x1="300" y1="20" x2="300" y2="580"/><line x1="20" y1="300" x2="580" y2="300"/><line x1="100" y1="100" x2="500" y2="500"/><line x1="500" y1="100" x2="100" y2="500"/></g>
+    </g></svg>
+  </div></div>
+  <div class="container"><div class="hero-content">
+    <div class="prod-badge">Produto IA · CoreFlow <span class="by">by <b>Diletta Solutions</b></span></div>
+    <h1>Core banking não<br/>constrói banco.<br/><span class="accent">Orquestração sim.</span></h1>
+    <p class="hero-lede">
+      O CoreFlow é a <em>camada de orquestração</em> que transforma core banking em produto financeiro real.
+      Não substituímos o core — <em>transformamos ele num produto de verdade</em>. Pacotiza 5 anos e 40+ projetos
+      bancários da Diletta numa plataforma com BFF, Business Engine, integrações multi-core e IA nativa.
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><div class="l">Arquitetura</div><div class="v">5 camadas <span class="small">· event-driven</span></div></div>
+      <div class="hero-meta-item"><div class="l">Multi-core</div><div class="v">Matera · Pismo · Celcoin…</div></div>
+      <div class="hero-meta-item"><div class="l">Time-to-market</div><div class="v">−40 a 50%</div></div>
+    </div>
+  </div></div>
+</header>
+
+<!-- PROBLEMA vs SOLUCAO -->
+<section id="problema">
+  <div class="container">
+    <div class="reveal" style="max-width: 800px;">
+      <div class="eyebrow">O problema real</div>
+      <h2 class="section-title">O core resolve a regulação.<br/>Mas não resolve o <span class="accent">negócio</span>.</h2>
+      <p class="section-lede">O core cuida do ledger, das contas e das transações. Mas tudo que gera valor real — experiência, regras de negócio, diferenciação e escala — acontece na camada acima. E essa camada, na maioria das operações, está incompleta, mal feita ou simplesmente ausente.</p>
+    </div>
+    <div class="cmp-grid reveal">
+      <div class="cmp-card bad">
+        <div class="cmp-eyebrow"><span class="pip"></span>Core Banking · infraestrutura</div>
+        <h3>Resolve a fundação</h3>
+        <ul class="cmp-list">
+          <li><span class="mk v" style="background:rgba(255,255,255,0.10);color:var(--text-2)">✓</span><span>Ledger e contabilidade</span></li>
+          <li><span class="mk v" style="background:rgba(255,255,255,0.10);color:var(--text-2)">✓</span><span>Contas e transações</span></li>
+          <li><span class="mk v" style="background:rgba(255,255,255,0.10);color:var(--text-2)">✓</span><span>Chave PIX e regulação</span></li>
+          <li><span class="mk x">✕</span><span>Experiência real do usuário</span></li>
+          <li><span class="mk x">✕</span><span>Lógica de negócio complexa</span></li>
+          <li><span class="mk x">✕</span><span>Orquestração entre sistemas</span></li>
+          <li><span class="mk x">✕</span><span>Diferenciação e inovação</span></li>
+        </ul>
+      </div>
+      <div class="cmp-card good">
+        <div class="cmp-eyebrow"><span class="pip"></span>CoreFlow · o produto real</div>
+        <h3>Constrói o banco competitivo</h3>
+        <ul class="cmp-list">
+          <li><span class="mk v">⚡</span><span><strong>BFF completo e seguro</strong> + device pairing e sessão</span></li>
+          <li><span class="mk v">⚡</span><span><strong>Limites e alçadas dinâmicas</strong></span></li>
+          <li><span class="mk v">⚡</span><span><strong>Motor de regras configurável</strong> (low-code)</span></li>
+          <li><span class="mk v">⚡</span><span><strong>Mensageria event-driven</strong> e workflows financeiros</span></li>
+          <li><span class="mk v">⚡</span><span><strong>Conectores multi-core prontos</strong></span></li>
+          <li><span class="mk v">⚡</span><span><strong>IA nativa</strong> para operações</span></li>
+          <li><span class="mk v">⚡</span><span><strong>Observabilidade e anti-fraude</strong></span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARQUITETURA -->
+<section style="background: var(--bg-1); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
+  <div class="container">
+    <div class="reveal" style="max-width: 760px;">
+      <div class="eyebrow">Arquitetura &amp; funcionamento</div>
+      <h2 class="section-title">A camada que transforma<br/>core banking em <span class="accent">produto</span>.</h2>
+      <p class="section-lede">Um motor de produto financeiro em 5 camadas, orquestrando todas as interações entre a interface do usuário e os sistemas regulatórios — de forma segura, escalável e inteligente.</p>
+    </div>
+    <div class="arch reveal">
+      <div class="arch-layer opt">
+        <div class="arch-num">—</div>
+        <div class="arch-body">
+          <h4>Camada de Experiência <span style="font-size:12px;color:var(--text-3);font-family:Inter,sans-serif;font-weight:400;">(opcional)</span></h4>
+          <div class="sub">App mobile · web app · SDK/API · UI white-label</div>
+        </div>
+      </div>
+      <div class="arch-layer hl">
+        <div class="arch-num">2</div>
+        <div class="arch-body">
+          <h4>Backend for Frontend (BFF)</h4>
+          <div class="sub">O coração do produto · segurança e orquestração</div>
+          <div class="arch-chips"><span class="stack-chip">Device Pairing</span><span class="stack-chip">Gestão de Sessão</span><span class="stack-chip">Rate Limiting</span><span class="stack-chip">Orquestração de APIs</span><span class="stack-chip">Anti-fraude</span><span class="stack-chip">Feature Flags</span><span class="stack-chip">Observabilidade</span></div>
+        </div>
+      </div>
+      <div class="arch-layer hl">
+        <div class="arch-num">3</div>
+        <div class="arch-body">
+          <h4>Business Engine</h4>
+          <div class="sub">O diferencial competitivo · regras e workflows</div>
+          <div class="arch-chips"><span class="stack-chip">Limites Dinâmicos</span><span class="stack-chip">Alçadas / Approval Flows</span><span class="stack-chip">Regras Low-Code</span><span class="stack-chip">Mensageria Event-Driven</span><span class="stack-chip">Scheduler / Jobs</span><span class="stack-chip">Workflows Financeiros</span></div>
+        </div>
+      </div>
+      <div class="arch-layer hl">
+        <div class="arch-num">4</div>
+        <div class="arch-body">
+          <h4>Integration Layer</h4>
+          <div class="sub">Plug-and-play multi-core</div>
+          <div class="arch-chips"><span class="stack-chip">Matera</span><span class="stack-chip">Celcoin</span><span class="stack-chip">Pismo</span><span class="stack-chip">Aarin</span><span class="stack-chip">Autbank</span><span class="stack-chip">+ Novos conectores</span></div>
+        </div>
+      </div>
+      <div class="arch-layer hl">
+        <div class="arch-num">5</div>
+        <div class="arch-body">
+          <h4>AI Layer</h4>
+          <div class="sub">Inteligência operacional nativa</div>
+          <div class="arch-chips"><span class="stack-chip">Auto-ajuste de limites</span><span class="stack-chip">Detecção de anomalias</span><span class="stack-chip">Copiloto operacional</span><span class="stack-chip">Sugestão de regras</span><span class="stack-chip">Automação de decisões</span></div>
+        </div>
+      </div>
+      <div class="arch-layer core">
+        <div class="arch-num">1</div>
+        <div class="arch-body">
+          <h4>Core Banking <span style="font-size:12px;color:var(--text-3);font-family:Inter,sans-serif;font-weight:400;">(infraestrutura regulatória — o seu)</span></h4>
+          <div class="sub" style="color:var(--text-3)">Ledger · conta corrente · transações · chave PIX · regulação</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUE PROPS -->
+<section>
+  <div class="container">
+    <div class="reveal" style="max-width: 760px;">
+      <div class="eyebrow">Proposta de valor</div>
+      <h2 class="section-title">O retorno do<br/><span class="accent">"miolo invisível"</span></h2>
+      <p class="section-lede">A camada de orquestração é a mais problemática na construção de um produto financeiro — e a que mais constrói modelos de negócio incríveis. O CoreFlow productiza aquilo que todo cliente sofre e ninguém resolve bem.</p>
+    </div>
+    <div class="diff-grid reveal" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="diff-card"><div class="big">40-50<span class="small">%</span></div><div class="name">Redução de Time-to-Market</div><p>Implementação muito mais rápida que desenvolver a camada do zero.</p></div>
+      <div class="diff-card"><div class="big">40+<span class="small"></span></div><div class="name">Projetos validados</div><p>Arquitetura testada e aprovada em mais de 40 projetos bancários reais.</p></div>
+      <div class="diff-card"><div class="big">Multi<span class="small">-core</span></div><div class="name">Agnóstico de core</div><p>Troque de fornecedor sem reescrever a camada de negócio.</p></div>
+      <div class="diff-card"><div class="big">IA<span class="small"></span></div><div class="name">Nativa, não add-on</div><p>O primeiro orchestration layer com IA nativa para operações financeiras.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PUBLICO ALVO -->
+<section style="background: var(--bg-1); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
+  <div class="container">
+    <div class="reveal" style="max-width: 760px;">
+      <div class="eyebrow">Público-alvo</div>
+      <h2 class="section-title">Para quem o CoreFlow<br/>foi <span class="accent">construído</span></h2>
+      <p class="section-lede">Para instituições que já entenderam que o core banking é apenas a fundação. A batalha competitiva é travada na camada de orquestração — e é exatamente aí que o CoreFlow atua.</p>
+    </div>
+    <div class="ai-grid reveal">
+      <div class="ai-card">
+        <div class="ai-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></div>
+        <h3>Fintechs em crescimento</h3>
+        <p>Contrataram um core mas sofrem com limitações operacionais e lentidão para lançar features. Buscam escalar e diferenciar — com motor de regras low-code e automação de limites e alçadas.</p>
+      </div>
+      <div class="ai-card">
+        <div class="ai-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M7 8V6a5 5 0 0110 0v2"/></svg></div>
+        <h3>Novos bancos digitais</h3>
+        <p>Go-live é crítico. Precisam de estrutura operacional pronta e integração de múltiplos serviços — com BFF completo e redução de 40-50% no TTM.</p>
+      </div>
+      <div class="ai-card">
+        <div class="ai-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg></div>
+        <h3>Instituições tradicionais</h3>
+        <p>Querem modernizar e inovar mas são travadas por legado rígido e arquitetura caótica — com hub de integração padronizado e camada moderna desacoplada do legado.</p>
+      </div>
+      <div class="ai-card">
+        <div class="ai-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg></div>
+        <h3>Embedded finance &amp; varejo</h3>
+        <p>Plataformas não-financeiras (varejistas, ERPs, marketplaces) que querem embarcar serviços financeiros com regras de crédito altamente customizadas — com motor de regras e BaaS.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASOS DE USO -->
+<section>
+  <div class="container">
+    <div class="reveal" style="max-width: 760px;">
+      <div class="eyebrow">Casos de uso</div>
+      <h2 class="section-title">Onde a orquestração cria<br/><span class="accent">vantagem real</span></h2>
+      <p class="section-lede">Transformamos a complexidade de múltiplos sistemas financeiros em produtos escaláveis e eficientes.</p>
+    </div>
+    <div class="reveal">
+      <div class="usecase">
+        <div><div class="tag">Banco Digital</div><h4>Aceleração de go-live para neobanks</h4><p>Lançar a operação em tempo recorde sem construir toda a camada BFF e regras do zero. O CoreFlow conecta ao core (ex: Matera ou Pismo) de forma segura e imediata.</p><div class="uc-chips"><span class="stack-chip">BFF Completo</span><span class="stack-chip">Device Pairing</span><span class="stack-chip">Observabilidade</span><span class="stack-chip">Integration Layer</span></div></div>
+        <div class="impact"><div class="big">40-50%<br/>mais rápido</div><div class="lbl">Time-to-market</div></div>
+      </div>
+      <div class="usecase">
+        <div><div class="tag">Fintech</div><h4>Automação de crédito e limites</h4><p>Acaba com a gestão manual de limites e a falta de flexibilidade nas alçadas. O Business Engine traz controle dinâmico e fluxos automatizados, com IA sugerindo ajustes por comportamento.</p><div class="uc-chips"><span class="stack-chip">Business Engine</span><span class="stack-chip">Limites Dinâmicos</span><span class="stack-chip">Alçadas</span><span class="stack-chip">AI Layer</span></div></div>
+        <div class="impact"><div class="big">Escala sem<br/>crescer time</div><div class="lbl">de risco</div></div>
+      </div>
+      <div class="usecase">
+        <div><div class="tag">Embedded Finance</div><h4>Varejo com produtos financeiros customizados</h4><p>Uma grande rede oferece serviços financeiros no próprio app, com regras de crédito que o core padrão não suporta. O CoreFlow atua como motor de regras orquestrando fluxos próprios de aprovação.</p><div class="uc-chips"><span class="stack-chip">Motor de Regras</span><span class="stack-chip">Workflows</span><span class="stack-chip">Scheduler</span><span class="stack-chip">Mensageria</span></div></div>
+        <div class="impact"><div class="big">Produto<br/>100% próprio</div><div class="lbl">financeiro</div></div>
+      </div>
+      <div class="usecase">
+        <div><div class="tag">Multi-core</div><h4>Hub de integração para múltiplos cores</h4><p>Instituição usa vários fornecedores (ex: Celcoin para PIX + Autbank para ledger) e sofre com arquitetura caótica. O CoreFlow vira hub padronizado — troque de fornecedor sem reescrever o negócio.</p><div class="uc-chips"><span class="stack-chip">Integration Layer</span><span class="stack-chip">Multi-Core</span><span class="stack-chip">Orquestração de APIs</span><span class="stack-chip">BFF</span></div></div>
+        <div class="impact"><div class="big">Zero lock-in</div><div class="lbl">de fornecedor</div></div>
+      </div>
+      <div class="usecase">
+        <div><div class="tag">Arranjo Fechado</div><h4>Bank-as-a-Service e casos nichados</h4><p>Um sistema de cartão de transporte (arranjo fechado) precisa de BaaS altamente customizado, com regras que não cabem no modelo tradicional. O CoreFlow oferece a camada flexível para modelá-las.</p><div class="uc-chips"><span class="stack-chip">BaaS</span><span class="stack-chip">Regras Configuráveis</span><span class="stack-chip">Feature Flags</span><span class="stack-chip">AI Layer</span></div></div>
+        <div class="impact"><div class="big">Produto<br/>nichado único</div><div class="lbl">viável</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODELO -->
+<section style="background: var(--bg-1); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
+  <div class="container">
+    <div class="reveal" style="max-width: 760px;">
+      <div class="eyebrow">Modelo de investimento</div>
+      <h2 class="section-title">Híbrido, alinhado<br/>ao seu <span class="accent">crescimento</span></h2>
+      <p class="section-lede">Você paga pela implantação e por uma licença previsível, com a parte variável acompanhando a escala da sua operação. Valores sob consulta, dimensionados ao seu cenário.</p>
+    </div>
+    <div class="invest-grid reveal">
+      <div class="invest-step"><div class="step-n">PASSO 1</div><h4>Setup &amp; Implantação</h4><div class="price">Sob consulta</div><p>Integração com o core existente, BFF completo, configuração do Business Engine e implantação do ambiente.</p></div>
+      <div class="invest-step"><div class="step-n">PASSO 2</div><h4>Licença Mensal</h4><div class="price">Sob consulta</div><p>Business Engine (limites, alçadas, regras) e integrações base inclusas, com previsibilidade.</p></div>
+      <div class="invest-step"><div class="step-n">PASSO 3</div><h4>Variável por Escala</h4><div class="price">Sob consulta</div><p>Cobrança por volume de contas ativas ou transações, alinhando custo ao crescimento.</p></div>
+      <div class="invest-step"><div class="step-n">UPSELL</div><h4>Módulos Premium</h4><div class="price">Sob consulta</div><p>IA avançada, novos conectores de core, suporte premium e customizações sob demanda.</p></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- CTA / CONTATO -->
+<section id="contato" class="cta">
+  <div class="container">
+    <div class="cta-grid">
+      <div class="cta-left reveal">
+        <div class="eyebrow">Vamos conversar</div>
+        <h2 class="cta-title">Quer ver como o CoreFlow<br/>transforma seu <span class="accent">core banking?</span></h2>
+        <p class="cta-lede">Mostramos onde o CoreFlow encaixa no seu stack — no seu core, com suas regras. Conte seu cenário e a gente responde rápido, como sempre.</p>
+        <a class="cta-email" href="mailto:contato@dilettasolutions.com?subject=Interesse%20em%20CoreFlow">
+          <span class="cta-email-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+          contato@dilettasolutions.com
+        </a>
+        <a class="cta-linkedin" href="https://www.linkedin.com/company/diletta-solutions/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 110-4.13 2.06 2.06 0 010 4.13zm1.78 13.02H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+          /company/diletta-solutions
+        </a>
+      </div>
+      <div class="cta-form-wrap reveal">
+        <form id="contactForm" class="cta-form" data-product="CoreFlow">
+          <div class="field"><label for="f-nome">Nome</label><input type="text" id="f-nome" name="nome" placeholder="Seu nome" required></div>
+          <div class="field"><label for="f-empresa">Empresa</label><input type="text" id="f-empresa" name="empresa" placeholder="Nome da empresa"></div>
+          <div class="field"><label for="f-email">E-mail</label><input type="email" id="f-email" name="email" placeholder="voce@empresa.com" required></div>
+          <div class="field"><label for="f-fone">Telefone / WhatsApp</label><input type="tel" id="f-fone" name="fone" placeholder="(11) 90000-0000"></div>
+          <div class="field"><label for="f-msg">Como podemos ajudar?</label><textarea id="f-msg" name="msg" rows="3" placeholder="Conte brevemente seu cenário, o core banking atual e o prazo." required></textarea></div>
+          <button type="submit" class="cta-submit">Quero falar sobre CoreFlow<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          <div class="cta-note">Ao enviar, abrimos seu app de e-mail com a mensagem pronta para <strong>contato@dilettasolutions.com</strong>.</div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="container">
+    <div class="foot-top">
+      <div class="foot-col foot-brandcol">
+        <div class="foot-brand">
+          <img src="data:image/png;base64,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" alt="Diletta" style="height: 30px;">
+          <div class="text">DILETTA <span style="color: var(--red);">SOLUTIONS</span></div>
+        </div>
+        <p class="foot-tagline">Engenharia de software centrada em IA. 20+ anos, +100 projetos, clientes em 4 países.</p>
+        <div class="foot-badges">
+          <span class="foot-badge"><span class="foot-badge-dot"></span>Instituto Inova Unicamp</span>
+          <span class="foot-badge"><span class="foot-badge-dot"></span>Revelo Awards · RH</span>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h5>Contato</h5>
+        <a href="mailto:contato@dilettasolutions.com">contato@dilettasolutions.com</a>
+        <a href="https://www.linkedin.com/company/diletta-solutions/" target="_blank" rel="noopener">LinkedIn · /company/diletta-solutions</a>
+      </div>
+      <div class="foot-col">
+        <h5>Endereço</h5>
+        <p class="foot-addr">Rua Walter August Hadler, 325<br/>Cidade Universitária · Campinas · SP<br/>CEP 13083-837</p>
+      </div>
+      <div class="foot-col">
+        <h5>Vínculos</h5>
+        <a href="https://www.inova.unicamp.br/" target="_blank" rel="noopener">Empresa do Instituto Inova Unicamp</a>
+        <span class="foot-static">Ganhadores do Revelo Awards de RH</span>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Diletta Solutions. Todos os direitos reservados.</span>
+      <span>Construído com IA no DNA.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* Reveal on scroll */
+const reveals = document.querySelectorAll('.reveal');
+const revObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revObs.unobserve(e.target); } });
+}, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+reveals.forEach(r => revObs.observe(r));
+
+/* Animated counters */
+function animateCounter(el, target, duration = 1600) {
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(eased * target).toLocaleString('pt-BR');
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.stat-num').forEach(s => { const c = s.querySelector('.counter'); if (c && s.dataset.target) animateCounter(c, +s.dataset.target); });
+      counterObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.4 });
+document.querySelectorAll('.stats-grid').forEach(g => counterObs.observe(g));
+
+/* Contact form -> mailto */
+(function() {
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+  const product = form.dataset.product || 'Diletta';
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const v = id => (document.getElementById(id) ? document.getElementById(id).value : '') || '';
+    const nome = v('f-nome'), empresa = v('f-empresa'), email = v('f-email'), fone = v('f-fone'), msg = v('f-msg');
+    const subject = encodeURIComponent('Interesse em ' + product + ' \u2014 ' + nome + (empresa ? ' (' + empresa + ')' : ''));
+    const body = encodeURIComponent(
+      'Produto de interesse: ' + product + '\n' +
+      'Nome: ' + nome + '\n' + 'Empresa: ' + empresa + '\n' +
+      'E-mail: ' + email + '\n' + 'Telefone/WhatsApp: ' + fone + '\n\n' +
+      'Mensagem:\n' + msg
+    );
+    window.location.href = 'mailto:contato@dilettasolutions.com?subject=' + subject + '&body=' + body;
+  });
+})();
+</script>
+</body>
+</html>
