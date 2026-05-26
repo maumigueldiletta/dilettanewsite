@@ -1463,6 +1463,7 @@ reveals.forEach(r => revObs.observe(r));
       'E-mail: ' + decodeURIComponent(email) + '\n\n' +
       'Mensagem:\n' + msg
     );
+    window.dataLayer=window.dataLayer||[];window.dataLayer.push({'event':'lead_form_submit','form_product':'site'});
     window.location.href = 'mailto:contato@dilettasolutions.com?subject=' + subject + '&body=' + body;
   });
 })();

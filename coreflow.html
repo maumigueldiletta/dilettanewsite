@@ -1062,6 +1062,7 @@ document.querySelectorAll('.stats-grid').forEach(g => counterObs.observe(g));
       'E-mail: ' + email + '\n' + 'Telefone/WhatsApp: ' + fone + '\n\n' +
       'Mensagem:\n' + msg
     );
+    window.dataLayer=window.dataLayer||[];window.dataLayer.push({'event':'lead_form_submit','form_product':'coreflow'});
     window.location.href = 'mailto:contato@dilettasolutions.com?subject=' + subject + '&body=' + body;
   });
 })();
